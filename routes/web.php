@@ -1,8 +1,9 @@
 <?php
 
-Route::get('/', 'StaticPagesController@home')->home('home');
+Route::get('/', 'StaticPagesController@home')->name('home');
 Route::get('/help', 'StaticPagesController@help')->name('help');
 Route::get('/about', 'StaticPagesController@about')->name('about');
 
-
+//注册界面
+Route::get('signup', 'UserController@create')->name('signup');
 
