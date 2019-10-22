@@ -19,11 +19,17 @@ class UserController extends Controller
     /**
      * 注册逻辑
      */
-    public function store()
+    public function store(Request $request)
     {
-        
+        //验证
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|confirmed|min:6'
+        ]);
 
 
+        return;
     }
 
 
