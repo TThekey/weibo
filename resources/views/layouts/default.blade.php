@@ -8,6 +8,8 @@
 
     @include('layouts._header')
 
+    @include('shared._messages')
+
 
     @yield('content')
 

@@ -28,8 +28,18 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:6'
         ]);
 
+        //用户信息存储到数据库
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->name)
+        ]);
 
-        return;
+        //消息提示
+        session()->flash('success', '您即将开启一段新旅程');
+
+        //重定向
+        return redirect()->route('users.show',[$user]);
     }
 
 
