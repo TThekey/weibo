@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * 注册页面
      */
     public function create()
@@ -16,8 +17,10 @@ class UserController extends Controller
         return view('users.create');
     }
 
-
     /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      * 注册逻辑
      */
     public function store(Request $request)
@@ -51,10 +54,56 @@ class UserController extends Controller
     /**
      * @param User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * 个人信息页
+     * 个人信息页面
      */
     public function show(User $user)
     {
         return view('users.show', compact('user'));
     }
+
+
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * 更新信息页面
+     */
+    public function edit(User $user)
+    {
+        return view('users.edit', compact('user'));
+    }
+
+    /**
+     * @param User $user
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     * 更新信息逻辑
+     */
+    public function update(User $user, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmed|min:6'
+        ]);
+
+
+        $data = [];
+        $data['name'] = $request->name;
+
+        if($request->password){
+            $data['password'] = $request->password;
+        }
+
+        $user->update($data);
+
+        session()->flash('success', '个人资料更新成功！');
+
+        return redirect()->route('users.show', [$user]);
+    }
+
+
+
+
+
+
 }
