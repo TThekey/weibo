@@ -13,7 +13,7 @@ class UserController extends Controller
     {
         //auth中间件来过滤未登录用户
         $this->middleware('auth', [
-            'except' => ['create', 'show', 'store']
+            'except' => ['create', 'show', 'store','index']
         ]);
 
         //只让未登录用户访问注册界面
@@ -21,6 +21,17 @@ class UserController extends Controller
             'only' => ['create']
         ]);
     }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * 用户列表页面
+     */
+    public function index()
+    {
+        $users = User::paginate(10);
+        return view('users.index', compact('users'));
+    }
+
 
 
     /**
