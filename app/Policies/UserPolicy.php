@@ -20,8 +20,17 @@ class UserPolicy
     }
 
 
+    //只能更新自己的信息
     public function update(User $currentUser, User $user)
     {
         return $currentUser->id === $user->id;
     }
+
+
+    //只有管理员能删除，并且管理员不能删除自己
+    public function destroy(User $currentUser, User $user)
+    {
+        $currentUser->is_admin && $currentUser->id !== $user->id;
+    }
+
 }
