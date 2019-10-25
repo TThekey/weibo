@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -13,7 +14,7 @@ class UserController extends Controller
     {
         //auth中间件来过滤未登录用户
         $this->middleware('auth', [
-            'except' => ['create', 'show', 'store','index']
+            'except' => ['create', 'show', 'store','index','confirmEmail']
         ]);
 
         //只让未登录用户访问注册界面
@@ -66,14 +67,14 @@ class UserController extends Controller
         ]);
 
 
-        //注册成功，自动登录
-        Auth::login($user);
+        //注册成功，发送激活邮箱
+        $this->sendEmailConfirmationTo($user);
 
         //消息提示
-        session()->flash('success', '您即将开启一段新旅程');
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收');
 
         //重定向
-        return redirect()->route('users.show',[$user]);
+        return redirect('/');
     }
 
 
@@ -132,7 +133,13 @@ class UserController extends Controller
     }
 
 
-
+    /**
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * 删除用户
+     */
     public function destroy(User $user)
     {
         $this->authorize('destroy', $user);
@@ -143,6 +150,47 @@ class UserController extends Controller
 
         return back();
     }
+
+
+    /**
+     * @param $user
+     * 发送注册激活邮件
+     */
+    protected function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'tthekey1997@163.com';
+        $name = 'TThekey';
+        $to = $user->email;
+        $subject = "感谢注册 Weibo 应用！请确认你的邮箱。";
+
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
+
+    /**
+     * @param $token
+     * @return \Illuminate\Http\RedirectResponse
+     * 激活注册用户逻辑
+     */
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
+    }
+
+
+    
 
 
 
