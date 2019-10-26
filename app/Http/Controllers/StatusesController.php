@@ -13,8 +13,12 @@ class StatusesController extends Controller
         $this->middleware('auth');
     }
 
-
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     * 发布微博
+     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -29,9 +33,18 @@ class StatusesController extends Controller
     }
 
 
-
-    public function destroy()
+    /**
+     * @param Status $status
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * 删除微博
+     */
+    public function destroy(Status $status)
     {
-
+        $this->authorize('destroy', $status);
+        $status->delete();
+        session()->flash('success', '微博已被成功删除');
+        return redirect()->back();
     }
 }
