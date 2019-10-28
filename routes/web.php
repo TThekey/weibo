@@ -40,4 +40,8 @@ Route::get('/users/{user}/followings', 'UserController@followings')->name('users
 Route::get('/users/{user}/followers', 'UserController@followers')->name('users.followers');
 
 
+//关注和取消关注
+Route::post('/users/followers/{user}', 'FollowersController@store')->name('followers.store');
+Route::delete('/users/followers/{user}', 'FollowersController@destroy')->name('followers.destroy');
+
 
