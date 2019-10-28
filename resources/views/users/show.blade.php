@@ -10,8 +10,10 @@
 
             111111111111
 
-            {{--@if (Auth::check())--}}
+            <section>
                 @include('users._follow_form')
+            </section>
+            {{--@if (Auth::check())--}}
             {{--@endif--}}
 
             <section class="stats mt-2">
